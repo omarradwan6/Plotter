@@ -1,10 +1,10 @@
 import React from 'react';
-import Plotter from './Plotter'
+import MainPage from './MainPage'
 
 function App() {
   return (
     <div >
-      <Plotter/>
+      <MainPage/>
     </div>
   );
 }

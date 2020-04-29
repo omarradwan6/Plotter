@@ -9,35 +9,30 @@ class Plotter extends React.Component {
 
     constructor(props) {
         super(props)
-        this.state = { columns: [], data: [] }
-
+        this.state = {  data: [] }
         this.getData = this.getData.bind(this)
-        this.getColumns = this.getColumns.bind(this)
     }
 
 
     getData() {
         axios.post(' https://plotter-task.herokuapp.com/data', {
-            "measures": ["Cost"],
-            "dimension": "Product"
+            "measures": [this.props.Measure],
+            "dimension": this.props.Dimension
           })
           .then( (response)=> {
             console.log(response);
 
             var data= []
+            var dataLength=response.data[0]['values'].length-1
+            var names=response.data[0]['values']
+            var values=response.data[1]['values']
 
-            for(let i=0;i<=response.data[0]['values'].length-1;i++){
+            for(let i=0;i<=dataLength;i++){
 
-                data.push({name:response.data[0]['values'][i],value:response.data[1]['values'][i]})
+                data.push({name:names[i],value:values[i]})
 
             }
             this.setState({data})
-
-
-
-
-            
-
 
           })
           .catch(function (error) {
@@ -46,22 +41,10 @@ class Plotter extends React.Component {
 
     }
 
-    getColumns() {
-        axios.get('https://plotter-task.herokuapp.com/columns')
-            .then((response) => {
-                // handle success
-                this.setState({ columns: response.data })
-            })
-            .catch(function (error) {
-                // handle error
-                console.log(error);
-            })
-    }
-
+    
 
     componentDidMount() {
 
-        this.getColumns()
         this.getData()
     }
 
@@ -80,7 +63,7 @@ class Plotter extends React.Component {
                     height={300}
                     data={this.state.data}
                     margin={{
-                        top: 5, right: 30, left: 20, bottom: 5,
+                        top: 5, bottom: 5,
                     }}
                 >
                     <CartesianGrid strokeDasharray="3 3" />

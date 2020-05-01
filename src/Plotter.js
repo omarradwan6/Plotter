@@ -9,39 +9,49 @@ class Plotter extends React.Component {
 
     constructor(props) {
         super(props)
-        this.state = {  data: [] }
+        this.state = { data: [] }
         this.getData = this.getData.bind(this)
     }
 
 
     getData() {
         axios.post(' https://plotter-task.herokuapp.com/data', {
-            "measures": [this.props.Measure],
+            "measures": this.props.Measure,
             "dimension": this.props.Dimension
-          })
-          .then( (response)=> {
-            console.log(response);
+        })
+            .then((response) => {
+                // console.log(response);
 
-            var data= []
-            var dataLength=response.data[0]['values'].length-1
-            var names=response.data[0]['values']
-            var values=response.data[1]['values']
+                var data = []
+                var values = []
 
-            for(let i=0;i<=dataLength;i++){
+                for (let i = 0; i <= response.data.length - 1; i++) {
 
-                data.push({name:names[i],value:values[i]})
+                    values.push(response.data[i]['values'])
 
-            }
-            this.setState({data})
+                }
 
-          })
-          .catch(function (error) {
-            console.log(error);
-          });
+                for (let j = 0; j <= values[0].length - 1; j++) {
+                    data[j] = {}
+                    for (let i = 0; i <= values.length - 1; i++) {
+
+                        data[j][`values${i}`] = values[i][j]
+
+                    }
+                }
+
+                this.setState({ data })
+            
+
+
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
 
     }
 
-    
+
 
     componentDidMount() {
 
@@ -53,28 +63,46 @@ class Plotter extends React.Component {
 
     render() {
 
-        
 
         return (
+            <>
+                {this.state.data.length != 0 &&
+                    <LineChart
+                        width={500}
+                        height={300}
+                        data={this.state.data}
+                        margin={{
+                            top: 5, bottom: 5,
+                        }}
+                    >
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="value0" />
+                        <YAxis />
+                        <Tooltip />
+                        <Legend />
+
+                        {Object.keys(this.state.data[0]).map((a) => {
+                            
+                            if (a != 'values0') {
+                                return (
+
+                                    <Line type="monotone" key={a} dataKey={a} stroke="#8884d8" activeDot={{ r: 8 }} />
+                                )
+                            }
+
+                        })}
 
 
-                <LineChart
-                    width={500}
-                    height={300}
-                    data={this.state.data}
-                    margin={{
-                        top: 5, bottom: 5,
-                    }}
-                >
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name"  />
-                    <YAxis />
-                    <Tooltip />
-                    <Legend />
-                    <Line type="monotone" dataKey="value" stroke="#8884d8" activeDot={{ r: 8 }} />
-                </LineChart>
 
-            
+
+
+
+
+                    })}
+
+            </LineChart>
+                }
+            </>
         )
 
 

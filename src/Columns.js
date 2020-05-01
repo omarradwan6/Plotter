@@ -35,7 +35,6 @@ class Columns extends Component {
         return (
             <div>
                 <nav class="navbar navbar-light bg-light text-center">
-                {/* <h3 className=''>Columns</h3> */}
                 <h2 class="navbar-brand " >Columns</h2>
                 </nav>
                 <ul class="list-group">
